@@ -1,0 +1,5 @@
+import { Link } from 'react-router-dom';
+import { PageIntro, SectionTitle } from '../../components/PublicUI';
+
+export function About() { return <><PageIntro title="在更长的时间里，成为更好的自己。" description="Six Pillars 是一个围绕六项核心能力的三年成长系统：用真实实践积累，用可验证的成果回看。"/><div className="about-grid"><section><SectionTitle title="两项专业，四项生活支点。"/><p>模拟 / 混合信号 IC 是主专业，AI 是独立第二专业。健身运动、英语表达、做饭烹饪与金融素养，为长期学习和生活建立稳定的支点。</p><p>公开页面只展示经过筛选的介绍、计划与作品。私人空间将用于目标、日志和复盘，后续按里程碑逐步建设。</p></section><aside className="about-aside"><h2>关于本人</h2><p>个人简介与简历摘要待本人补充。</p><h2>联系</h2><p>公开联系渠道尚未设置。</p><p className="muted">这里没有虚构身份或联系地址。</p></aside></div><section className="principle-block"><h2>保留边界，也保留主动权。</h2><p>身体健康、个人财务与未公开研究记录保持私密。公开内容独立撰写，不通过切换私人记录的可见性直接发布。</p><Link className="text-link" to="/pillars">认识六大能力 →</Link></section></>; }
+export function NotFound() { return <div className="empty-state not-found"><span className="year-label">404</span><h1>这一页还没有留下足迹。</h1><p>链接可能有误，或内容尚未准备好。</p><Link className="button" to="/">回到首页 →</Link></div>; }
