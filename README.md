@@ -2,7 +2,12 @@
 
 当前交付为 **M0 静态公开站点**。React + TypeScript strict + Vite + Tailwind CSS + HashRouter。内容全部在本地配置编辑，无登录、数据库、私人数据写入或 LLM 连接。
 
-**验收状态：本地验证与 GitHub Pages 线上验收分开记录；未取得实际部署及线上浏览器测试结果前，不标记 M0 正式通过。** 当前目录未关联远程仓库，线上部署尚未验证。
+**验收状态：M0 已于 2026-10-15 正式完成。** 已验证本地构建、GitHub Actions 部署及实际 Pages 站点的公开交互与三种宽度布局。M1 尚未启动，须本人明确批准。
+
+- 正式站点：[Six Pillars](https://namjuryman.github.io/six-pillars/)
+- 源码仓库：[Namjuryman/six-pillars](https://github.com/Namjuryman/six-pillars)，默认分支 `main`。
+- 首次正式验收：[Actions 运行 38684725258](https://github.com/Namjuryman/six-pillars/actions/runs/38684725258)，`build`、`deploy`、`verify-deployment` 全部 success。
+- 实际线上测试：CI Chromium 21/21、本机 Edge 21/21，覆盖 375×812、768×1024、1440×1000；无页面控制台错误或横向溢出。Actions artifacts 保存线上 JSON 与截图。
 
 ## 本地运行
 
@@ -84,7 +89,9 @@ Remove-Item Env:E2E_BASE_URL
 
 默认 `vite.config.ts` 的 base 为 `/six-pillars/`。其他仓库名改为 `/<仓库名>/`；根仓库或自定义域名改为 `/`。HashRouter 支持刷新嵌套详情页。
 
-当前仅配置 workflow，没有创建远程仓库、推送代码或验证线上部署。上线需要上述 GitHub 账户与仓库配置。浏览器本地预览、手工检查工作流、API 权限配置或模拟路径均不能替代真实部署验证。
+当前仓库已推送至 `Namjuryman/six-pillars`，Pages 的 `build_type` 为 `workflow` 且强制 HTTPS。首次部署与线上验收均已实际运行通过。浏览器本地预览、手工检查工作流、API 权限配置或模拟路径均不能替代真实部署验证；后续每次 main 更新仍需检查三作业结果。
+
+工作流固定 Ubuntu 24.04，并将证据上传 action 固定为 v7.0.2 commit，避免使用即将迁移的 runner 标签与已弃用 Node 20 的上传版本。测试代码与 M0 应用功能保持一致。
 
 部署依据：[Vite 静态部署](https://vite.dev/guide/static-deploy.html)、[GitHub Pages 发布源](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)。
 
