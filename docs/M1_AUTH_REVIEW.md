@@ -2,6 +2,8 @@
 
 ## 已确认的状态
 
+最终准备轮：本人已确定继续 Magic Link、关闭注册、唯一 owner + RLS；暂不开发 Supabase TOTP/AAL2，也不为泄露密码保护升级 Pro。此决定替代下方先前的方案建议。本轮再次只读确认密码凭据仍在、Supabase verified MFA 为 0；未尝试密码登录、未修改账户或会话。仍需本人确认登录邮箱的双因素认证，以及现存 Auth 密码是否为密码管理器保存的独立强密码；工具无法核查邮箱账户安全设置或未知密码强度。
+
 开发项目只读查询仅返回布尔值和数量，没有读取密码哈希、JWT、MFA secret 或邮箱正文：本人已确认邮箱、`encrypted_password` 非空、白名单授权，**verified MFA factor 为 0**。两个临时测试 Auth 账户也保留密码凭据，均无白名单。安全 Advisor 仍有 `auth_leaked_password_protection` WARN；未调整计划、密码、账户、MFA、Hook、会话或 RLS。
 
 产品只展示 Magic Link；官方 `signInWithOtp` + `shouldCreateUser:false` 只决定此次登录请求与是否创建用户，**不会禁用 Auth 的密码认证**。关闭新用户注册也不会删除已有密码。之前真实 QA 使用过测试账户的密码认证；本轮因临时凭据已清理、本人密码未知，**没有再次尝试密码登录**，不能把“有凭据”报告为本轮密码登录成功。按当前证据必须视密码途径仍可能使用，不能宣传后端已是 passwordless-only。

@@ -2,6 +2,26 @@
 
 状态：方案与构建防护已提交到 Draft PR #1；没有创建生产项目、设置生产变量、发送生产登录邮件、触发部署或修改 Auth 账户。只有本人批准后才能执行本文的生产步骤。
 
+## 最终准备轮：实际配置与剩余限制
+
+- 已通过 GitHub API 创建 `six-pillars-production` 并读回：custom branch policy 仅 `main`；required reviewer 是 Namjuryman，`prevent_self_review=false`，本人可以审批自己的手动发布。环境变量当前 0 个，尚无生产配置。仓库为 public，现有计划支持这些规则。`github-pages` 也已确认仅允许 main；main 保护继续要求 `build`，管理员也受主分支保护。
+- `can_admins_bypass=true` 是实际读回值，不声称管理员绝对不能绕过。发布操作规程是本人显式批准、main 手动触发、本人 Review deployments 审批；不使用管理员 bypass。本轮没有通过触发部署来实测审批阻断，不能把配置读回写成运行级发布验收。
+- Supabase 组织 API 确认 Free，当前只发现东京 DEV 项目。本人已批准在确认免费后新建东京 `six-pillars-prod`。但必需 get_cost 工具返回 UNAVAILABLE、浏览器控制启动失败，尚未创建生产项目；未伪造成本确认 ID 或用开发项目代替。生产迁移、Auth/回调、三身份 API、Advisor 和环境变量均待实际项目。
+- 已按本人授权开放临时 Cloudflare HTTPS 到仅监听回环的静态预览，开发 publishable key 仅进入该预览（不上传 Pages）。实测 HTTPS 登录表单正常、无 pageerror、源码和 `.env` 返回 404，具备 CSP、no-referrer、no-store。没有代理 Vite 开发服务器、数据库或本地 API。临时域名可能失效，具体地址只在本次对话提供。
+- HTTPS 登录还需要 DEV Auth 添加精确的临时回调 URL；当前工具没有 Auth 配置接口且浏览器不可用，本轮未修改。没有完整 Magic Link 或真机同步结果；不得开始使用私人数据。预览脚本最长运行两小时，结束后可停止隧道，不使用生产配置。
+
+### 单人邮件服务评估（2026-10-15）
+
+默认服务允许组织成员邮箱，官方目前为 **2 封/小时**，无送达 SLA；单人偶尔登录可能够用，但手机、电脑独立登录及失败验收容易耗尽限额，不承诺可靠生产使用。本轮未自动发送新邮件、未配置第三方或购买域名。
+
+| 可选方案 | 当前费用依据 | 配置与限制 |
+| --- | --- | --- |
+| 暂用 Supabase 默认 SMTP | 现有服务，无新增购买 | 仅组织成员、2 封/小时、无 SLA；需本人接受风险，无法冒充已通过生产邮件验收 |
+| Resend Free SMTP | [官方 Free](https://resend.com/pricing)，每日 100 封；域名费用另计 | 需本人账户、验证可控发件域名、DNS 认证；SMTP secret 仅填 Supabase，不能入前端；不开 overage 或升级 |
+| Amazon SES | [官方 à la carte](https://aws.amazon.com/ses/pricing/)发送 $0.10/千封，可能有其他费用；新账户默认套餐可能不同 | 须明确选择计费模式、AWS 账户和域名验证、sandbox/地区限制；不适合作为本次零配置默认项，未经批准不开户或消费 |
+
+默认服务限制见 [Supabase 官方说明](https://supabase.com/docs/guides/auth/auth-smtp)。最终选项待本人决定；先完成 DEV 精确回调和本人的实际收件/设备结果。勿为测试限流反复请求邮件。
+
 ## 生产构建与 PR 隔离
 
 现有问题：原工作流仅 `npm run build`，不会读取 `.env.development.local`，因此正式包会显示登录未配置。不能把开发库直接接到公开正式站解决。
@@ -23,7 +43,7 @@
 ### 本人批准之后的配置清单（本轮未执行）
 
 1. 确认专用生产 Supabase 项目及预算；开发项目 `rplgwjhnptappdbwqygj` 被构建器明确拒绝，不能当作正式项目。
-2. GitHub Settings → Environments 创建 `six-pillars-production`，限制仅 main；配置 required reviewers，开启可用的防自行批准 / 禁止绕过保护。保护项是否可用取决于仓库与计划，必须现场验证；未具备保护不能声称审批已生效。`github-pages` 的环境保护也需复核。
+2. `six-pillars-production` 已按单人维护要求创建：限制 main、required reviewer 为本人、允许本人审批。配置已读回；实际审批运行还待获准发布时验证。管理员 bypass 仍可用，操作时不使用 bypass。不要启用 prevent_self_review 使唯一维护者无法审批。`github-pages` 已复核 main 分支限制。
 3. 在该 environment 的 **Variables** 配置 `PRODUCTION_SUPABASE_PROJECT_REF`、`PRODUCTION_SUPABASE_URL`（精确为 `https://<ref>.supabase.co`，无尾斜杠）、`PRODUCTION_SUPABASE_PUBLISHABLE_KEY`（现代 `sb_publishable_...`）。这些是公开客户端标识，会写入 JS；数据库密码、service_role、sb_secret 和 SMTP 密钥不得填入。
 4. 在生产库审查迁移、最小授权、RLS、唯一 owner 白名单与账号安全选择；从生产 API 验证 anon / owner / non-owner。不能复用开发库的 107 项历史结果代替生产结果。
 5. Auth 自助注册关闭；生产 Site URL 和精确 Redirect URL 为 `https://namjuryman.github.io/six-pillars/`。开发回调只留在开发项目，不用广泛通配符。

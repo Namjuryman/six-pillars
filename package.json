@@ -13,7 +13,9 @@
     "build": "npm run typecheck && node scripts/build-site.mjs isolated",
     "build:pages": "npm run typecheck && node scripts/build-site.mjs",
     "preview": "vite preview --host 127.0.0.1",
-    "test:e2e:private": "node scripts/test-private-ui.mjs"
+    "test:e2e:private": "node scripts/test-private-ui.mjs",
+    "test:backup:local": "node scripts/backup-drill.mjs",
+    "preview:device": "node scripts/device-preview.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.117.3",
