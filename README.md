@@ -84,12 +84,12 @@ Remove-Item Env:E2E_BASE_URL
 
 1. 将此目录作为仓库根目录上传到你的 GitHub 仓库，默认仓库名 `six-pillars`、分支 `main`。
 2. 仓库 Settings → Pages → Build and deployment → Source 选择 **GitHub Actions**。
-3. 推送 main 后查看 `Validate and deploy Pages` workflow 的 `build` → `deploy` → `verify-deployment` 三个作业；最后一个作业直接测试真实 Pages 地址，保存浏览器结果与截图。三个作业全部通过才有线上验收证据。
+3. M1 合并前修订将部署改为显式手动：push / PR 只执行隔离 `build`。经本人批准后，从 main 手动运行 workflow，勾选 `deploy_pages` 并选择 public/private，依次检查 `build` → `pages-build` → `deploy` → `verify-deployment`。私有模式需独立生产环境变量与环境审批；见 [发布计划](docs/M1_RELEASE_PLAN.md)。本轮不触发部署。
 4. 建议对 main 设置保护规则，要求 `build` 检查通过后合并。
 
 默认 `vite.config.ts` 的 base 为 `/six-pillars/`。其他仓库名改为 `/<仓库名>/`；根仓库或自定义域名改为 `/`。HashRouter 支持刷新嵌套详情页。
 
-当前仓库已推送至 `Namjuryman/six-pillars`，Pages 的 `build_type` 为 `workflow` 且强制 HTTPS。首次部署与线上验收均已实际运行通过。浏览器本地预览、手工检查工作流、API 权限配置或模拟路径均不能替代真实部署验证；后续每次 main 更新仍需检查三作业结果。
+当前仓库已推送至 `Namjuryman/six-pillars`，Pages 的 `build_type` 为 `workflow` 且强制 HTTPS。M0 首次部署与线上验收均已实际运行通过。浏览器本地预览、手工检查工作流、API 权限配置或模拟路径均不能替代真实部署验证；M1 分支的发布流程需另经本人批准后使用。
 
 工作流固定 Ubuntu 24.04，并将证据上传 action 固定为 v7.0.2 commit，避免使用即将迁移的 runner 标签与已弃用 Node 20 的上传版本。测试代码与 M0 应用功能保持一致。
 

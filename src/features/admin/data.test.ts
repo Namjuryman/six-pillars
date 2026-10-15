@@ -19,6 +19,8 @@ function query(result: unknown) {
     "update",
     "delete",
     "single",
+    "limit",
+    "gt",
   ])
     q[name] = vi.fn().mockReturnValue(q);
   q.then = (resolve: Function) =>
@@ -28,9 +30,11 @@ function query(result: unknown) {
 }
 describe("private SDK data boundary", () => {
   test("reads scoped to session identity", async () => {
-    const q = query({ data: [{ id: "row" }], error: null });
-    expect(await all("goals")).toEqual([{ id: "row" }]);
+    const q = query({ data: [], error: null });
+    expect(await all("goals")).toEqual([]);
     expect(q.eq).toHaveBeenCalledWith("owner_id", "owner");
+    expect(q.order).toHaveBeenCalledWith("id", { ascending: true });
+    expect(q.limit).toHaveBeenCalledWith(500);
   });
   test("inserts cannot spoof ownership or server metadata", async () => {
     const q = query({ data: { id: "row" }, error: null });

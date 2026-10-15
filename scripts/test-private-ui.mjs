@@ -13,5 +13,5 @@ const cli = (path, args) => {
   });
   if (result.status !== 0) process.exit(result.status ?? 1);
 };
-cli("node_modules/vite/bin/vite.js", ["build", "--outDir", ".m1-ui-dist"]);
+cli("scripts/build-site.mjs", ["mock"]);
 cli("node_modules/@playwright/test/cli.js", ["test", ...process.argv.slice(2)]);

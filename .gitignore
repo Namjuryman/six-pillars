@@ -10,3 +10,5 @@ playwright-report/
 .DS_Store
 
 .m1-ui-dist/
+pages-dist/
+backups/

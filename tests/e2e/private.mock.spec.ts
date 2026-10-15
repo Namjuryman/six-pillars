@@ -1,4 +1,5 @@
-import { test, expect, type Page } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
+import { test } from "./network";
 import { mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
 // UI contract mocks only. These are NOT Supabase login or RLS security tests.
@@ -96,6 +97,13 @@ async function backend(page: Page, owner = true) {
           !value.startsWith("eq.") || String(row[key]) === value.slice(3),
       );
     let result = state.rows[table].filter(matches);
+    if (method === "GET") {
+      const cursor = url.searchParams.get("id");
+      if (cursor?.startsWith("gt."))
+        result = result.filter((row) => row.id > cursor.slice(3));
+      result = [...result].sort((a, b) => a.id.localeCompare(b.id));
+      result = result.slice(0, Number(url.searchParams.get("limit") ?? 1000));
+    }
     if (method === "POST") {
       const row = {
         id: crypto.randomUUID(),
@@ -402,6 +410,29 @@ test("freeform achievements, dates, all pillars, pin, sort, filters and deletion
   await expect(page.getByText("没有符合条件的成就。")).toBeVisible();
   await page.goto("./#/achievements");
   await expect(page.getByText("自定义测试成就1")).toHaveCount(0);
+});
+
+test("more than 1000 logs remain counted and filterable across SDK pages (mock)", async ({ page }) => {
+  const api = await backend(page);
+  api.rows.activity_logs = Array.from({ length: 1505 }, (_, i) => ({
+    id: `00000000-0000-4000-8000-${String(i + 1).padStart(12, "0")}`,
+    owner_id: ownerId,
+    created_at: "2026-10-15T00:00:00Z",
+    pillar_key: "english",
+    activity_on: i === 1504 ? "2026-10-15" : "2026-10-14",
+    title: i === 1504 ? "跨页最后一条测试日志" : `合成日志${i}`,
+    duration_minutes: null,
+    note: "UI mock only",
+  }));
+  await login(page);
+  await expect(page.getByRole("link", { name: "1505 活动记录" })).toBeVisible();
+  await shot(page, "pagination-count");
+  await page.getByRole("navigation", { name: "后台导航" }).getByRole("link", { name: "活动日志" }).click();
+  await page.getByLabel("指定日期").fill("2026-10-15");
+  await expect(page.getByRole("heading", { name: "跨页最后一条测试日志" })).toBeVisible();
+  await expect(page.locator(".private-list article")).toHaveCount(1);
+  await noOverflow(page);
+  await shot(page, "pagination-filter");
 });
 
 test("data service failure shows recoverable error, never fake data (mock)", async ({

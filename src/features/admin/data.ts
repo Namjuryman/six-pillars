@@ -55,13 +55,39 @@ function fail(error: unknown) {
 }
 export async function all<T>(table: Table): Promise<T[]> {
   const owner = await currentUserId();
-  const { data, error } = await client()
-    .from(table)
-    .select("*")
-    .eq("owner_id", owner)
-    .order("created_at", { ascending: false });
-  fail(error);
-  return data as T[];
+  type Row = { id: string; created_at: string };
+  const rows: Row[] = [];
+  let cursor: string | undefined;
+  // UUID keyset pagination avoids offset shifts when other tabs delete rows.
+  // Continue until EMPTY, even if the server caps pages below our requested 500.
+  for (;;) {
+    let query = client()
+      .from(table)
+      .select("*")
+      .eq("owner_id", owner)
+      .order("id", { ascending: true })
+      .limit(500);
+    if (cursor) query = query.gt("id", cursor);
+    const { data, error } = await query;
+    fail(error);
+    if (!data) throw new Error("读取未返回记录");
+    if (data.length === 0) break;
+    const page = data as Row[];
+    let previous = cursor;
+    for (const row of page) {
+      if (!row.id || (previous !== undefined && row.id <= previous))
+        throw new Error("分页读取顺序异常，请刷新重试");
+      previous = row.id;
+    }
+    rows.push(...page);
+    cursor = previous;
+  }
+  // Preserve the existing newest-first UI; UUID is the deterministic tie breaker.
+  rows.sort(
+    (a, b) =>
+      b.created_at.localeCompare(a.created_at) || b.id.localeCompare(a.id),
+  );
+  return rows as T[];
 }
 export async function add<T>(
   table: Table,

@@ -1,9 +1,9 @@
 import {
-  test as base,
   expect,
   type Page,
   type TestInfo,
 } from "@playwright/test";
+import { test as base } from "./network";
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import { pillars } from "../../src/config/pillars";
