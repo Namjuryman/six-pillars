@@ -80,6 +80,9 @@ export function Layout() {
         <Outlet />
       </main>
       <footer className="site-footer">
+        <Link to="/login" className="private-entry-link">
+          管理登录
+        </Link>
         <Link to="/">
           <Brand />
         </Link>

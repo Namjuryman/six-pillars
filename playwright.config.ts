@@ -1,8 +1,12 @@
 import { defineConfig } from "@playwright/test";
 import { resolve } from "node:path";
 
+const privateMocks = process.env.E2E_PRIVATE_MOCKS === "1";
 const deployedURL = process.env.E2E_BASE_URL;
-const baseURL = deployedURL ?? "http://127.0.0.1:4173/six-pillars/";
+const port = privateMocks ? 4174 : 4173;
+if (privateMocks && deployedURL)
+  throw new Error("Mock tests cannot target a deployment");
+const baseURL = deployedURL ?? `http://127.0.0.1:${port}/six-pillars/`;
 if (new URL(baseURL).pathname !== "/six-pillars/") {
   throw new Error(
     "E2E_BASE_URL must include the /six-pillars/ base path and trailing slash.",
@@ -12,6 +16,7 @@ const output = process.env.E2E_OUTPUT_DIR ?? "test-results";
 
 export default defineConfig({
   testDir: "./tests/e2e",
+  testMatch: privateMocks ? "private.mock.spec.ts" : "public.spec.ts",
   outputDir: resolve(output, "artifacts"),
   reporter: [
     ["line"],
@@ -35,7 +40,9 @@ export default defineConfig({
   webServer: deployedURL
     ? undefined
     : {
-        command: "npm run preview -- --port 4173 --strictPort",
+        command: privateMocks
+          ? "npm run preview -- --outDir .m1-ui-dist --port 4174 --strictPort"
+          : "npm run preview -- --port 4173 --strictPort",
         url: baseURL,
         reuseExistingServer: false,
         timeout: 30_000,

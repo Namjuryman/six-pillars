@@ -2,7 +2,7 @@
 
 当前交付为 **M0 静态公开站点**。React + TypeScript strict + Vite + Tailwind CSS + HashRouter。内容全部在本地配置编辑，无登录、数据库、私人数据写入或 LLM 连接。
 
-**验收状态：M0 已于 2026-10-15 正式完成。** 已验证本地构建、GitHub Actions 部署及实际 Pages 站点的公开交互与三种宽度布局。M1 尚未启动，须本人明确批准。
+**验收状态：M0 已于 2026-10-15 正式完成。** 已验证本地构建、GitHub Actions 部署及实际 Pages 站点的公开交互与三种宽度布局。M1 已获本人授权，在独立开发分支验证中，尚未合并或部署。
 
 - 正式站点：[Six Pillars](https://namjuryman.github.io/six-pillars/)
 - 源码仓库：[Namjuryman/six-pillars](https://github.com/Namjuryman/six-pillars)，默认分支 `main`。
@@ -99,6 +99,33 @@ Remove-Item Env:E2E_BASE_URL
 
 M0 不使用 Supabase 环境变量，不接入分析跟踪、不持久化用户输入。浏览器只有公开静态内容。Markdown 禁用原始 HTML，危险 URL 使用库默认过滤，外链配置 `noopener noreferrer`。
 
-[更新后的 PRD v1.1](docs/PRD.md)、[Achievements 产品与数据设计](docs/achievements.md) 与 [SQL 提案 v1.1](docs/schema.proposal.sql) 保留供未来参考。SQL 尚未部署或验证，不属于当前可执行迁移；没有声称其 RLS 安全。下一阶段是 **M1 单人安全后台（含私人成就 CRUD 与点亮）**，需明确授权后启动，使用独立 Supabase 开发项目验证匿名、owner 与 non-owner 三种 API 权限。M2 才实现成就独立公开快照、预览、置顶与撤回。图片模型保留私有对象路径，实际上传仍按附件里程碑另行实施。
+[更新后的 PRD v1.1](docs/PRD.md)、[Achievements 产品与数据设计](docs/achievements.md) 与 [SQL 提案 v1.1](docs/schema.proposal.sql) 保留供未来参考。SQL 尚未部署或验证，不属于当前可执行迁移；没有声称其 RLS 安全。**M1 已获授权并在独立分支开发，尚未正式验收或合并**；独立开发库迁移已执行，仍须完成 owner / non-owner 与真实邮箱登录验收。M2 才实现成就独立公开快照、预览、置顶与撤回。图片模型保留私有对象路径，实际上传仍按附件里程碑另行实施。
 
 [项目工作要求](AGENTS.md) · [M0 设计说明](docs/design.md)
+
+
+## M1 开发分支（待真实认证与 RLS 完整验收）
+
+- `feature/m1-private-workspace`：导入 2026-10-15 交接包，仅以 PR 审查；不直接合并 main。
+- 官方 `@supabase/supabase-js` 负责邮箱认证、会话恢复/续期/注销及私人表读写；仅接受现代 publishable key。
+- `/#/login`、`/#/admin`、目标/里程碑、日志及私人成就 CRUD；成就支持六项或综合、实际日期、筛选、私人置顶和排序。
+- 默认不连接后端。开发项目配置仅保存在被忽略的 `.env.development.local`，由 `npm run dev` 读取；生产构建不会读取此文件。没有配置生产 Supabase 或 M2 发布。
+- 两份已应用开发迁移位于 `supabase/migrations/`，包括六张私有表、白名单、RLS、约束、组合外键及索引。`docs/schema.proposal.sql` 仍是未来全量模型提案，不能与本次迁移混用。
+
+```powershell
+npm ci
+npm run typecheck
+npm test
+npm run build
+npm run check:styles
+npm run test:e2e
+npm run test:e2e:private
+# 仅在已配置独立开发环境后，验证真实匿名 API：
+node scripts/verify-anonymous.mjs
+```
+
+`test:e2e:private` 使用独立 `.m1-ui-dist` 构建及保留的 `.invalid` 域名模拟服务，不读取真实项目、不向生产站点运行，也不上传为 Pages 产物。CI 明确区分 UI 模拟与后端安全验收。结果不能证明真实登录、持久化或 RLS 正确。
+
+详见 [开发配置](docs/M1_SETUP.md)、[三身份安全矩阵](docs/M1_SECURITY_TEST.md) 和 [交接要求](docs/M1_CODEX_HANDOFF.md)。关闭自助注册、配置邮箱链接开发回调、创建测试账户、白名单和完整真实 API 验证均为合并前条件。
+
+本轮本人选择官方邮箱链接登录，替代交接包中的六位 OTP 输入。保持关闭自助注册和 app_owners 白名单；不要求编辑默认模板或额外配置 SMTP。

@@ -32,6 +32,11 @@ jobs:
       - run: npm run test:e2e
         env:
           E2E_SCREENSHOT_DIR: test-results/screenshots
+      - name: Private UI contract tests (isolated mocks, not RLS)
+        run: npm run test:e2e:private
+        env:
+          E2E_OUTPUT_DIR: test-results/private
+          E2E_SCREENSHOT_DIR: test-results/private/screenshots
       - name: Preserve browser test evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

@@ -8,12 +8,14 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "format:styles": "prettier --write src/styles.css",
-    "check:styles": "prettier --check src/styles.css",
+    "format:styles": "prettier --write src/styles*.css",
+    "check:styles": "prettier --check src/styles*.css",
     "build": "npm run typecheck && vite build",
-    "preview": "vite preview --host 127.0.0.1"
+    "preview": "vite preview --host 127.0.0.1",
+    "test:e2e:private": "node scripts/test-private-ui.mjs"
   },
   "dependencies": {
+    "@supabase/supabase-js": "2.117.3",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-markdown": "10.1.0",
