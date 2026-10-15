@@ -19,7 +19,7 @@ import {
   watchAuth,
 } from "../../lib/privateApi";
 
-type Status = "checking" | "guest" | "owner" | "denied";
+type Status = "checking" | "signingOut" | "guest" | "owner" | "denied";
 interface AuthValue {
   status: Status;
   email: string;
@@ -90,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async signOut() {
         signingOut.current = true;
         ++revision.current;
-        setStatus("guest");
+        setStatus("signingOut");
         setEmail("");
         setError("");
         try {
@@ -99,6 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setError("本地会话已退出，服务端注销暂不可用。");
         } finally {
           signingOut.current = false;
+          setStatus("guest");
         }
       },
       retry() {
@@ -112,10 +113,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function ProtectedRoute() {
   const { status } = useOwner();
   const loc = useLocation();
-  if (status === "checking")
+  if (status === "checking" || status === "signingOut")
     return (
       <div className="private-state">
-        <h1>正在验证账户…</h1>
+        <h1>{status === "signingOut" ? "正在退出登录…" : "正在验证账户…"}</h1>
       </div>
     );
   if (status !== "owner")
@@ -142,6 +143,12 @@ export function Login({
   const [message, setMessage] = useState(
     callbackFailed ? "登录链接无效或已过期，请重新获取。" : "",
   );
+  if (status === "signingOut")
+    return (
+      <div className="private-state">
+        <h1>正在退出登录…</h1>
+      </div>
+    );
   if (status === "owner")
     return (
       <Navigate

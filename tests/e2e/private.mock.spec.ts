@@ -7,7 +7,13 @@ const callbackURLs = new WeakMap<Page, () => string>();
 const ownerId = "00000000-0000-4000-8000-000000000001";
 const otherId = "00000000-0000-4000-8000-000000000002";
 async function backend(page: Page, owner = true) {
+  let releaseLogout: () => void = () => {};
+  const logoutGate = new Promise<void>((resolve) => {
+    releaseLogout = resolve;
+  });
   const state = {
+    holdLogout: false,
+    releaseLogout: () => releaseLogout(),
     rows: {
       goals: [],
       milestones: [],
@@ -73,7 +79,10 @@ async function backend(page: Page, owner = true) {
       return reply(session());
     }
     if (url.pathname.endsWith("/user")) return reply(user);
-    if (url.pathname.endsWith("/logout")) return reply({});
+    if (url.pathname.endsWith("/logout")) {
+      if (state.holdLogout) await logoutGate;
+      return reply({});
+    }
     if (url.pathname.endsWith("/app_owners"))
       return reply(owner ? [{ user_id: ownerId }] : []);
     const table = url.pathname.split("/").at(-1)!;
@@ -187,11 +196,32 @@ test("email link error, token cleanup, owner restore, refresh and logout (mock)"
   expect(api.refreshes).toBeGreaterThan(0);
   await noOverflow(page);
   await shot(page, "logs");
+  api.holdLogout = true;
   await page.getByRole("button", { name: "退出登录", exact: true }).click();
-  await expect(page).toHaveURL(/#\/login$/);
+  await expect(
+    page.getByRole("heading", { name: "正在退出登录…", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "后台导航" })).toHaveCount(
+    0,
+  );
+  await expect
+    .poll(() => api.requests.some((item) => item.path.endsWith("/logout")))
+    .toBe(true);
   expect(
-    await page.evaluate(() => sessionStorage.getItem("six-pillars-auth-v1")),
-  ).toBeNull();
+    await page.evaluate(
+      () => sessionStorage.getItem("six-pillars-auth-v1") !== null,
+    ),
+  ).toBe(true);
+  api.releaseLogout();
+
+  await expect(page).toHaveURL(/#\/login$/);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => sessionStorage.getItem("six-pillars-auth-v1") === null,
+      ),
+    )
+    .toBe(true);
   await page.goto("./#/admin");
   await expect(
     page.getByRole("heading", { name: "管理后台登录" }),
