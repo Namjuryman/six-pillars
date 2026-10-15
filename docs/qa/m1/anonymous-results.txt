@@ -1,0 +1,26 @@
+PASS anonymous GET app_owners: 401
+PASS anonymous POST app_owners: 401
+PASS anonymous PATCH app_owners: 401
+PASS anonymous DELETE app_owners: 401
+PASS anonymous GET goals: 401
+PASS anonymous POST goals: 401
+PASS anonymous PATCH goals: 401
+PASS anonymous DELETE goals: 401
+PASS anonymous GET milestones: 401
+PASS anonymous POST milestones: 401
+PASS anonymous PATCH milestones: 401
+PASS anonymous DELETE milestones: 401
+PASS anonymous GET projects: 401
+PASS anonymous POST projects: 401
+PASS anonymous PATCH projects: 401
+PASS anonymous DELETE projects: 401
+PASS anonymous GET activity_logs: 401
+PASS anonymous POST activity_logs: 401
+PASS anonymous PATCH activity_logs: 401
+PASS anonymous DELETE activity_logs: 401
+PASS anonymous GET achievements: 401
+PASS anonymous POST achievements: 401
+PASS anonymous PATCH achievements: 401
+PASS anonymous DELETE achievements: 401
+{"emailEnabled":true,"signupDisabled":true}
+24/24 anonymous direct HTTP checks passed. Owner/non-owner and email OTP checks are separate and still required.

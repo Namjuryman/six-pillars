@@ -55,6 +55,23 @@ try {
   } catch {
     /* first run */
   }
+  if (process.env.LIVE_QA_OWNER === "1" && !previousSession) {
+    const testClient = createClient(url, key, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+      },
+    });
+    const result = await testClient.auth.signInWithPassword({
+      email: "m1-qa-owner@example.invalid",
+      password: (
+        await readFile(resolve(input, "nonowner-password.local"), "utf8")
+      ).trim(),
+    });
+    assert.equal(result.error, null, "Temporary QA owner must authenticate");
+    previousSession = result.data.session;
+  }
   if (!previousSession) {
     const copied = spawnSync(
       "powershell.exe",
@@ -115,7 +132,7 @@ try {
     "Real owner session required",
   );
   await writeFile(savedSession, protectedState(JSON.stringify(session)));
-  console.log("PASS LIVE email link login and owner restoration");
+  console.log("PASS LIVE authenticated owner restoration");
   const shotdir = resolve(qa, "screenshots/live");
   await mkdir(shotdir, { recursive: true });
   await page.screenshot({
@@ -239,7 +256,8 @@ try {
   );
   await otherClient.auth.signOut({ scope: "local" });
   const report = {
-    ownerEmailLinkLogin: true,
+    emailLinkLoginInThisRun: !previousSession,
+    temporaryQaOwner: process.env.LIVE_QA_OWNER === "1",
     ownerReload: true,
     mobileRestoration: true,
     nonOwnerAuth: true,

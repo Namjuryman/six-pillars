@@ -30,8 +30,17 @@ curl -sS -i "$SUPABASE_URL/rest/v1/goals?select=*" \
 - 不要把 Supabase Auth JWT、访问邮箱和截图中的敏感值写到公开仓库、Actions 日志和截图工件。
 - RLS 通过后再部署生产项目，且生产项目重新进行抽样权限验收。
 
-**当前进度**：真实匿名 HTTP 子集已执行，6 表 × 4 操作共 24 项均返回 401/授权拒绝；Email 启用，自助注册关闭。owner / non-owner、日期/FK 校验及真实邮箱登录尚未执行，完整矩阵未通过。
+**当前结果（2026-10-15）**：
 
-可重跑匿名子集：`node scripts/verify-anonymous.mjs`（从忽略的 `.env.development.local` 读取公开项目 URL / publishable key，无 JWT 或数据库密码）。脚本不输出身份数据。
+- 真实匿名 HTTP：6 表 × 4 操作，24 项均被授权层拒绝。
+- 真实 owner / non-owner HTTP：107 项通过，包含本人行 CRUD、无 owner 条件的读取隔离、越权写入/删除、伪造 owner、白名单修改权限、六项/综合成就、状态/日期/时长校验、跨账户组合 FK 和清理。
+- 本人真实邮箱链接登录已验证。最终完整写入/注销复验使用本人批准的临时 QA owner；结束后立即撤销，未把 non-owner 加入白名单。
+- 后端真实浏览器：会话恢复、375px 独立上下文、非本人拒绝、成就创建/刷新/撤销/删除、退出后 SDK 会话清理均通过。
+- 私人 UI 的 15 项 mock 测试另外记录，不计入上述真实 API 结果。
+- 测试数据全部清理，当前五张业务表均为 0 行，白名单仅有本人。两个测试 Auth 身份保留但均无后台权限。
 
-Supabase 安全 Advisor 无告警；索引顺序问题已修复。新库未使用索引的提示见 [官方说明](https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index)。保留必要索引，后续随真实查询观察。
+可重跑匿名子集：`node scripts/verify-anonymous.mjs`。后端矩阵入口为 `scripts/verify-rls.mjs`，由本机真实认证验收脚本调用；只使用公开客户端 key 和真实用户 JWT，不使用 service-role。
+
+最终 Advisor：无 RLS / 性能告警；安全有 1 项 WARN：`auth_leaked_password_protection` 未开启。当前 Free 计划不能启用该项，[官方说明与修复入口](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection)列明 Pro 及以上可用。本次没有变更套餐或声称此提示已修复。正式上线前需确认此配置取舍。
+
+详情见 [验收报告](M1_QA_20261015.md)。

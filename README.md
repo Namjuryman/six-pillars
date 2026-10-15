@@ -63,7 +63,7 @@ Remove-Item Env:E2E_BASE_URL
 - 成就页 `/#/achievements`：徽章墙/时间线空状态、彩色/灰色状态图例及可复用徽章与详情组件。公开成就集合为空，没有虚构的个人成就，也没有管理按钮。
 - 公开内容全为明确标注的示例；没有虚构个人身份、能力百分比或完成数据。
 - GitHub Actions：PR 检查；main 构建通过后部署 GitHub Pages。
-- 自动化测试：内容边界和徽章组件单元测试；七组公开交互 × 三种宽度的 Playwright 测试。测试源不会打进生产包。
+- 自动化测试：内容边界和徽章组件单元测试；八组公开交互（含 M1 访客守卫）× 三种宽度的 Playwright 测试。测试源不会打进生产包。
 
 ## 修改内容
 
@@ -99,12 +99,12 @@ Remove-Item Env:E2E_BASE_URL
 
 M0 不使用 Supabase 环境变量，不接入分析跟踪、不持久化用户输入。浏览器只有公开静态内容。Markdown 禁用原始 HTML，危险 URL 使用库默认过滤，外链配置 `noopener noreferrer`。
 
-[更新后的 PRD v1.1](docs/PRD.md)、[Achievements 产品与数据设计](docs/achievements.md) 与 [SQL 提案 v1.1](docs/schema.proposal.sql) 保留供未来参考。SQL 尚未部署或验证，不属于当前可执行迁移；没有声称其 RLS 安全。**M1 已获授权并在独立分支开发，尚未正式验收或合并**；独立开发库迁移已执行，仍须完成 owner / non-owner 与真实邮箱登录验收。M2 才实现成就独立公开快照、预览、置顶与撤回。图片模型保留私有对象路径，实际上传仍按附件里程碑另行实施。
+[更新后的 PRD v1.1](docs/PRD.md)、[Achievements 产品与数据设计](docs/achievements.md) 与 [SQL 提案 v1.1](docs/schema.proposal.sql) 保留供未来参考。SQL 尚未部署或验证，不属于当前可执行迁移；没有声称其 RLS 安全。**M1 已获授权并在独立分支开发，尚未正式验收或合并**；独立开发库迁移已执行，真实邮箱登录与三身份开发库验证已执行，正式上线仍需审阅与独立设备抽验。M2 才实现成就独立公开快照、预览、置顶与撤回。图片模型保留私有对象路径，实际上传仍按附件里程碑另行实施。
 
 [项目工作要求](AGENTS.md) · [M0 设计说明](docs/design.md)
 
 
-## M1 开发分支（待真实认证与 RLS 完整验收）
+## M1 开发分支（开发库验证通过，待审阅）
 
 - `feature/m1-private-workspace`：导入 2026-10-15 交接包，仅以 PR 审查；不直接合并 main。
 - 官方 `@supabase/supabase-js` 负责邮箱认证、会话恢复/续期/注销及私人表读写；仅接受现代 publishable key。
@@ -126,6 +126,8 @@ node scripts/verify-anonymous.mjs
 
 `test:e2e:private` 使用独立 `.m1-ui-dist` 构建及保留的 `.invalid` 域名模拟服务，不读取真实项目、不向生产站点运行，也不上传为 Pages 产物。CI 明确区分 UI 模拟与后端安全验收。结果不能证明真实登录、持久化或 RLS 正确。
 
-详见 [开发配置](docs/M1_SETUP.md)、[三身份安全矩阵](docs/M1_SECURITY_TEST.md) 和 [交接要求](docs/M1_CODEX_HANDOFF.md)。关闭自助注册、配置邮箱链接开发回调、创建测试账户、白名单和完整真实 API 验证均为合并前条件。
+详见 [开发配置](docs/M1_SETUP.md)、[三身份安全矩阵](docs/M1_SECURITY_TEST.md) 和 [交接要求](docs/M1_CODEX_HANDOFF.md)。开发库已关闭注册并配置回调，真实认证及 24 + 107 项 API 检查通过。正式部署须单独准备生产配置，并处理报告中的遗留项。
 
 本轮本人选择官方邮箱链接登录，替代交接包中的六位 OTP 输入。保持关闭自助注册和 app_owners 白名单；不要求编辑默认模板或额外配置 SMTP。
+
+实际命令结果、脱敏截图、测试身份说明和遗留项见 [M1 验收报告](docs/M1_QA_20261015.md)。
