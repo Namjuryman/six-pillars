@@ -1,9 +1,9 @@
 import {
-  test as base,
   expect,
   type Page,
   type TestInfo,
 } from "@playwright/test";
+import { test as base } from "./network";
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import { pillars } from "../../src/config/pillars";
@@ -237,8 +237,6 @@ test("all 404 cases recover to home without backend routes", async ({
     "pillars/missing",
     "projects/missing",
     "writing/missing",
-    "login",
-    "admin",
   ]) {
     await page.goto(`./#/${route}`);
     await healthy(page);
@@ -291,4 +289,15 @@ test("Pages base path, favicon, CSS, JS and static images load after deep refres
   ).toBe("rgb(24, 62, 53)");
   await page.getByRole("link", { name: "查看三年路线" }).click();
   await expect(page.locator(".roadmap-tabs")).toBeVisible();
+});
+
+test("M1 admin routes redirect guests to login without exposing records", async ({
+  page,
+}) => {
+  await page.goto("./#/admin/achievements");
+  await expect(page).toHaveURL(/#\/login$/);
+  await expect(
+    page.getByRole("heading", { name: "管理后台登录" }),
+  ).toBeVisible();
+  await expect(page.locator(".private-item")).toHaveCount(0);
 });

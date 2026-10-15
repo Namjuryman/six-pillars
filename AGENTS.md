@@ -1,6 +1,6 @@
 # Six Pillars — Codex working instructions
 
-Read `PRD.md` before making code changes. Treat `schema.sql` as an **unverified migration proposal** until deployed and tested in a dedicated Supabase development project. Do not claim it is production-secure without validating policies.
+Read `docs/PRD.md` before making code changes. Treat `docs/schema.proposal.sql` as an **unverified migration proposal** until deployed and tested in a dedicated Supabase development project. Do not claim it is production-secure without validating policies.
 
 ## Scope control
 
@@ -30,6 +30,12 @@ Read `PRD.md` before making code changes. Treat `schema.sql` as an **unverified 
 4. Privacy/security considerations and known gaps.
 5. Steps still requiring user action (GitHub Pages, Supabase config).
 6. Next suggested milestone, without silently implementing it.
+
+## M1 authorized (2026-10-15)
+
+Owner-approved simplified launch supersedes the earlier two-project requirement: reuse `rplgwjhnptappdbwqygj` as the sole personal data project. Approval is recorded in `config/approved-data-project.json`. Keep PR builds isolated, RLS and key-type checks intact. Do not run destructive development suites or elevate QA accounts on this project. Production configuration is authorized; PR merge and Pages deployment still require separate explicit owner approval. Use default Supabase email first; no Pro/TOTP/M2 work.
+
+M0 has been accepted. M1 is now authorized, on a separate branch/PR only. Scope: single-owner email link authentication (explicitly approved instead of OTP during setup), goals/milestones/logs private CRUD, achievements CRUD and unlock/lock. No M2 publication, photo uploads, financial integrations or Agent. Do not merge or configure production Supabase without verified three-identity RLS API checks. Follow `docs/M1_SETUP.md`.
 
 ## M0 task
 

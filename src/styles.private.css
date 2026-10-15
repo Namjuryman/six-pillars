@@ -1,0 +1,296 @@
+/* M1 private workspace; deliberately separate from stable M0 public styles. */
+.private-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 55px clamp(18px, 4vw, 48px) 72px;
+  min-height: 50vh;
+}
+.private-shell h1 {
+  font-size: clamp(31px, 3.2vw, 48px);
+}
+.private-shell h2 {
+  font-size: clamp(24px, 2.3vw, 32px);
+  margin: 0 0 8px;
+}
+.private-shell h3 {
+  font-size: 21px;
+  margin: 0 0 10px;
+}
+.private-shell h4 {
+  font-size: 18px;
+  margin: 0;
+}
+.private-kicker {
+  color: #8d714c;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.19em;
+  text-transform: uppercase;
+}
+.private-top {
+  display: flex;
+  gap: 24px;
+  align-items: start;
+  justify-content: space-between;
+}
+.private-top > div > p:last-child,
+.private-shell section > p {
+  color: var(--muted);
+}
+.private-account {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.private-account small {
+  max-width: 200px;
+  overflow-wrap: anywhere;
+}
+.private-nav {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--line);
+  margin: 25px 0 30px;
+  padding: 0 0 12px;
+}
+.private-nav a {
+  padding: 9px 15px;
+  border-radius: 8px;
+  color: var(--forest);
+}
+.private-nav a[aria-current="page"] {
+  background: #d9e4dc;
+  font-weight: 700;
+}
+.private-login {
+  max-width: 560px;
+}
+.private-form {
+  display: grid;
+  gap: 15px;
+  margin: 26px 0;
+}
+.private-form label,
+.private-list-head label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.private-form input:not([type="checkbox"]),
+.private-form select,
+.private-form textarea,
+.private-filters select,
+.private-list-head select {
+  width: 100%;
+  padding: 11px 13px;
+  background: #fff;
+  border: 1px solid #a4b9ad;
+  border-radius: 9px;
+  font: inherit;
+  color: #183e35;
+  min-height: 44px;
+}
+.private-form textarea {
+  resize: vertical;
+  min-height: 65px;
+}
+.private-form input:focus-visible,
+.private-form select:focus-visible,
+.private-form textarea:focus-visible,
+.private-filters select:focus-visible {
+  outline: 2px solid #6b907b;
+  outline-offset: 2px;
+}
+.private-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.private-form .private-check {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+}
+.private-form .private-check input {
+  width: 20px;
+  height: 20px;
+}
+.private-panel,
+.private-item {
+  padding: 22px;
+  background: #fff;
+  border: 1px solid #d3dbd2;
+  border-radius: 14px;
+}
+.private-message,
+.private-error,
+.private-empty {
+  background: #edf1eb;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 15px 0;
+  color: var(--forest);
+}
+.private-error {
+  background: #fbebeb;
+  color: #913331;
+}
+.private-empty {
+  border: 1px dashed #bdcabe;
+  background: transparent;
+}
+.private-primary {
+  background: var(--forest) !important;
+  color: #fff !important;
+  padding: 10px 20px !important;
+  border-radius: 9px;
+  font-weight: 600;
+  min-height: 44px;
+}
+.private-primary:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+.private-actions {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.private-actions button:not(.private-primary),
+.private-account button {
+  background: #e7ece7;
+  padding: 8px 13px;
+  border-radius: 8px;
+  min-height: 44px;
+}
+.private-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+  margin: 25px 0;
+}
+.private-stats a {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.private-stats strong {
+  font-size: 36px;
+  font-weight: 700;
+}
+.private-stats span,
+.private-item small {
+  color: var(--muted);
+}
+.private-list-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 30px 0 15px;
+  flex-wrap: wrap;
+}
+.private-list-head select {
+  min-width: 135px;
+}
+.private-list {
+  display: grid;
+  gap: 12px;
+}
+.private-item-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.private-item-head span {
+  font-size: 13px;
+  color: var(--muted);
+}
+.private-item p {
+  overflow-wrap: anywhere;
+  margin: 7px 0;
+}
+.private-milestones {
+  margin: 12px 0 0;
+  padding: 10px 0 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+.private-milestones li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 3px 0;
+}
+.private-milestones li span {
+  flex: 1;
+}
+.private-milestones button {
+  min-width: 44px;
+  min-height: 44px;
+  font-weight: 700;
+  padding: 3px 9px;
+  background: #edf1eb;
+  border-radius: 5px;
+}
+.private-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.private-achievement {
+  display: flex;
+  align-items: start;
+  gap: 20px;
+}
+.private-achievement > div {
+  flex: 1;
+  min-width: 0;
+}
+.private-footer {
+  margin-top: 34px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.private-entry-link {
+  font-size: 13px;
+  color: var(--muted);
+}
+@media (max-width: 650px) {
+  .private-top {
+    flex-direction: column;
+  }
+  .private-form-grid,
+  .private-stats {
+    grid-template-columns: 1fr;
+  }
+  .private-shell {
+    padding-top: 30px;
+  }
+  .private-panel,
+  .private-item {
+    padding: 16px;
+  }
+  .private-achievement {
+    gap: 12px;
+  }
+  .private-filters {
+    width: 100%;
+  }
+  .private-filters label {
+    flex: 1;
+    min-width: 125px;
+  }
+}

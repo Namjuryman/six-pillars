@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-15",
+  "scope": "M1 pre-merge fixes, draft only",
+  "npmCi": {
+    "passed": true,
+    "audited": 211,
+    "vulnerabilities": 0,
+    "initialFailure": "EPERM from old Vite native-module lock; stopped server and reran successfully"
+  },
+  "typecheck": true,
+  "unitTests": {
+    "files": 9,
+    "passed": 75
+  },
+  "build": true,
+  "styles": true,
+  "isolatedBuildSentinelCheck": true,
+  "pagesBuildWithSyntheticConfig": true,
+  "realProductionBuild": false,
+  "browser": "Microsoft Edge / Playwright (Browser plugin unavailable)",
+  "viewports": [
+    375,
+    768,
+    1440
+  ],
+  "public": {
+    "startTime": "2026-10-15T08:07:53.136Z",
+    "duration": 54502.617000000006,
+    "expected": 24,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "privateMocks": {
+    "startTime": "2026-10-15T08:11:44.156Z",
+    "duration": 62052.938,
+    "expected": 18,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "paginationScreenshotRerun": {
+    "startTime": "2026-10-15T08:13:39.844Z",
+    "duration": 25245.444,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "readOnlyDevelopmentAudit": {
+    "emailEnabled": true,
+    "signupDisabled": true,
+    "whitelistCount": 1,
+    "businessRows": 0,
+    "ownerHasPasswordCredential": true,
+    "ownerVerifiedMfaFactors": 0,
+    "leakedPasswordProtectionWarning": true
+  },
+  "realOwnerRlsRerun": false,
+  "authAccountsModified": false,
+  "productionConfigured": false,
+  "deployed": false,
+  "merged": false,
+  "backupRestoreDrill": false,
+  "physicalDevicesTested": false
+}

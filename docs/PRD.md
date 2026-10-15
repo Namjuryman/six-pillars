@@ -55,7 +55,7 @@ AI Agent、自动分析与推荐、银行数据同步、健康设备同步、多
 
 | 路由 | 页面 | MVP 核心操作 |
 | --- | --- | --- |
-| `/#/login` | 登录 | 专属邮箱 OTP，验证码登录 |
+| `/#/login` | 登录 | 专属邮箱链接登录（M1 本轮本人确认，替代 OTP） |
 | `/#/admin` | 控制台 | 当前季度、各项投入状态、近期记录与待办里程碑 |
 | `/#/admin/roadmap` | 三年规划 | 按三年/年/季筛选与编辑目标 |
 | `/#/admin/goals` | 目标管理 | 创建/修改/归档目标，添加里程碑和验收依据 |
@@ -161,7 +161,7 @@ AI Agent、自动分析与推荐、银行数据同步、健康设备同步、多
 
 ### 7.3 Supabase
 
-- Auth：单人账户、邮箱 OTP（必要时配置自有 SMTP 以稳定送达）。
+- Auth：单人账户、官方邮箱登录链接（本轮本人确认替代 OTP；默认发信收件人有组织成员限制，扩大发信范围时配置 SMTP）。
 - PostgreSQL：迁移 SQL 纳入 Git；使用 Supabase CLI 管理 schema 变更。
 - RLS：`app_owners` 白名单 + 各行 `owner_id = auth.uid()`；`public_entries` 例外允许读取已发布行。
 - Storage：V1 无上传，V2 使用私有 bucket 和严格的对象权限。
@@ -179,7 +179,7 @@ AI Agent、自动分析与推荐、银行数据同步、健康设备同步、多
 
 - [ ] 公开首页及六项能力页面，桌面和手机可用
 - [ ] 公开三年路线概览与至少一个示例作品（内容可编辑）
-- [ ] 管理员邮箱 OTP 登录与退出，非本人不能进入数据层
+- [ ] 管理员邮箱链接登录与退出，非本人不能进入数据层
 - [ ] 六项能力目标 CRUD（含三年/年度/季度）、里程碑 CRUD
 - [ ] 日常日志新增/列表/编辑/删除，可按日期和领域筛选
 - [ ] 项目 CRUD，可记录代码仓库/成果链接
@@ -222,10 +222,11 @@ AI Agent、自动分析与推荐、银行数据同步、健康设备同步、多
 ### M1｜单人安全后台（预计 5–8 天）
 
 - 创建 Supabase 项目；部署 SQL migration；手动加入唯一管理员用户 ID。
-- 配置邮箱 OTP；完成登录、注销、认证状态和错误提示。
+- 配置官方邮箱登录链接与开发回调；完成登录、注销、认证状态和错误提示（本轮本人确认替代 OTP）。
 - 实现 Goals / Milestones / Logs 基础 CRUD。
 - 实现私人 Achievements 自由创建/编辑/删除/排序、可直接创建已点亮成就、点亮及撤销、能力/年份/状态筛选与持久化。M1 不公开发布。
 - 完成三类身份与直接 API 的 RLS 读写测试。
+- 合并前修订：修复超过 1,000 行的分批读取；生产构建与 PR 隔离，显式审批后才部署。认证安全、独立设备/生产邮件与三年数据备份方案见 [发布计划](M1_RELEASE_PLAN.md)、[认证审阅](M1_AUTH_REVIEW.md)、[备份方案](M1_BACKUP_PLAN.md)。本轮仅设计导出/恢复，不提前开发 M2 导出界面或发布。
 
 **验收**：匿名与非管理员无法读写私人表；本人跨设备登录后可继续记录。
 
@@ -321,5 +322,5 @@ Agent 只有在手动记录与复盘已经稳定、存在真实重复工作时�
 - Vite GitHub Pages: https://vite.dev/guide/static-deploy.html
 - Supabase RLS: https://supabase.com/docs/guides/database/postgres/row-level-security
 - Supabase publishable vs secret: https://supabase.com/docs/guides/getting-started/api-keys
-- Supabase Email OTP: https://supabase.com/docs/guides/auth/auth-email-passwordless
+- Supabase passwordless email: https://supabase.com/docs/guides/auth/auth-email-passwordless
 - Supabase Storage: https://supabase.com/docs/guides/storage/buckets/fundamentals

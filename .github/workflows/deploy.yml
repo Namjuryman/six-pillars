@@ -6,6 +6,16 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      deploy_pages:
+        description: Deploy Pages after owner approval (main only)
+        type: boolean
+        default: false
+      pages_mode:
+        description: Public-only or private workspace with approved production config
+        type: choice
+        options: [public, private]
+        default: public
 
 permissions:
   contents: read
@@ -32,19 +42,42 @@ jobs:
       - run: npm run test:e2e
         env:
           E2E_SCREENSHOT_DIR: test-results/screenshots
+      - name: Private UI contract tests (isolated mocks, not RLS)
+        run: npm run test:e2e:private
+        env:
+          E2E_OUTPUT_DIR: test-results/private
+          E2E_SCREENSHOT_DIR: test-results/private/screenshots
       - name: Preserve browser test evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: public-ui-checks
           path: test-results
-      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
-        if: github.event_name != 'pull_request'
-        with:
-          path: dist
-  deploy:
-    if: github.event_name != 'pull_request'
+  pages-build:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.deploy_pages
     needs: build
+    environment: six-pillars-production
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build approved Pages artifact (never used by PR tests)
+        run: npm run build:pages -- "$PAGES_BUILD_MODE"
+        env:
+          PAGES_BUILD_MODE: ${{ inputs.pages_mode }}
+          PRODUCTION_SUPABASE_PROJECT_REF: ${{ vars.PRODUCTION_SUPABASE_PROJECT_REF }}
+          PRODUCTION_SUPABASE_URL: ${{ vars.PRODUCTION_SUPABASE_URL }}
+          PRODUCTION_SUPABASE_PUBLISHABLE_KEY: ${{ vars.PRODUCTION_SUPABASE_PUBLISHABLE_KEY }}
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
+        with:
+          path: pages-dist
+  deploy:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.deploy_pages
+    needs: pages-build
     outputs:
       page_url: ${{ steps.deployment.outputs.page_url }}
     permissions:
