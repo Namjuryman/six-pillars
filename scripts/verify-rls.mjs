@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
+import approvedProject from "../config/approved-data-project.json" with { type: "json" };
 // Direct HTTP checks with real user sessions. Tokens stay in the caller's memory.
 // This module never loads a service key or bypasses RLS. Foreign fixture IDs, if
 // supplied, must come from disposable records created by a DB administrator.
@@ -12,6 +13,11 @@ export async function verifyRLS({
   foreignProjectId,
   onProgress = () => {},
 }) {
+  assert.notEqual(
+    new URL(url).hostname,
+    `${approvedProject.projectRef}.supabase.co`,
+    "Approved personal data project: destructive development RLS suite is disabled",
+  );
   assert.ok(
     url.startsWith("https://") && key.startsWith("sb_publishable_"),
     "Development client configuration required",

@@ -2,6 +2,15 @@ import { build } from "vite";
 import { readFile, stat, mkdir } from "node:fs/promises";
 import { createServer } from "node:http";
 import { resolve, extname, sep } from "node:path";
+import approvedProject from "../config/approved-data-project.json" with { type: "json" };
+
+throwIfLivePreview();
+function throwIfLivePreview() {
+  if (approvedProject.projectRef === "rplgwjhnptappdbwqygj")
+    throw new Error(
+      "Project is now the approved personal data project; old DEV tunnel preview is disabled. Use the approved Pages release.",
+    );
+}
 
 // Explicitly authorized temporary DEV preview; never part of CI or Pages builds.
 const config = Object.fromEntries(

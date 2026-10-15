@@ -5,6 +5,7 @@ import { resolve } from "node:path";
 import { chromium } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import { verifyRLS } from "./verify-rls.mjs";
+import approvedProject from "../config/approved-data-project.json" with { type: "json" };
 // Interactive developer-only check: user copies the one-use email link locally.
 // No HAR/trace or raw errors: neither URLs, JWTs, emails nor passwords are logged.
 const qa = resolve(process.env.LIVE_QA_DIR ?? "../qa-m1");
@@ -42,6 +43,11 @@ try {
   );
   const url = config.VITE_SUPABASE_URL,
     key = config.VITE_SUPABASE_PUBLISHABLE_KEY;
+  assert.notEqual(
+    new URL(url).hostname,
+    `${approvedProject.projectRef}.supabase.co`,
+    "Approved personal data project: development write/QA-owner harness is disabled",
+  );
   assert.ok(
     key?.startsWith("sb_publishable_"),
     "Publishable development key required",

@@ -1,8 +1,8 @@
 import { describe, expect, test } from "vitest";
 import { buildConfig } from "../scripts/build-policy.mjs";
 const approved = {
-  PRODUCTION_SUPABASE_PROJECT_REF: "abcdefghijklmnopqrst",
-  PRODUCTION_SUPABASE_URL: "https://abcdefghijklmnopqrst.supabase.co",
+  PRODUCTION_SUPABASE_PROJECT_REF: "rplgwjhnptappdbwqygj",
+  PRODUCTION_SUPABASE_URL: "https://rplgwjhnptappdbwqygj.supabase.co",
   PRODUCTION_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_test_public_identifier",
 };
 describe("Pages environment isolation", () => {
@@ -39,11 +39,11 @@ describe("Pages environment isolation", () => {
     { PRODUCTION_SUPABASE_PUBLISHABLE_KEY: "eyJhbGciOiJIUzI1NiJ9.legacy.jwt" },
     { PRODUCTION_SUPABASE_URL: "https://other.supabase.co" },
     {
-      PRODUCTION_SUPABASE_PROJECT_REF: "rplgwjhnptappdbwqygj",
-      PRODUCTION_SUPABASE_URL: "https://rplgwjhnptappdbwqygj.supabase.co",
+      PRODUCTION_SUPABASE_PROJECT_REF: "abcdefghijklmnopqrst",
+      PRODUCTION_SUPABASE_URL: "https://abcdefghijklmnopqrst.supabase.co",
     },
   ])(
-    "rejects secrets, legacy JWT, wrong ref and development project: %j",
+    "rejects secrets, legacy JWT, wrong URL and unapproved project: %j",
     (overrides) => {
       expect(() =>
         buildConfig("private", { ...approved, ...overrides }),
